@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f1f4f9;
+      margin: 0;
+      padding: 30px 15px;
+    }
+
+    .contenedor {
+      max-width: 420px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      color: #17365D;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .descripcion {
+      text-align: center;
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-top: 18px;
+      margin-bottom: 7px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 13px;
+      background: #17365D;
+      color: white;
+      border: none;
+      border-radius: 7px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #24558c;
+    }
+
+    button:disabled {
+      background: #8293a8;
+      cursor: not-allowed;
+    }
+
+    #mensaje {
+      margin-top: 18px;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="contenedor">
+
+    <h2>Registro del dólar</h2>
+
+    <p class="descripcion">
+      Sistema de captura de información
+    </p>
+
+    <form id="formulario">
+
+      <label for="dia">Número de día</label>
+
+      <input
+        type="number"
+        id="dia"
+        min="1"
+        step="1"
+        placeholder="Ej. 1"
+        required
+      >
+
+      <label for="dolar">Valor del dólar (MXN)</label>
+
+      <input
+        type="number"
+        id="dolar"
+        min="0.01"
+        step="0.01"
+        placeholder="Ej. 17.99"
+        required
+      >
+
+      <button type="submit" id="boton">
+        Guardar registro
+      </button>
+
+    </form>
+
+    <p id="mensaje"></p>
+
+  </div>
+
+  <script>
+
+    const formulario = document.getElementById('formulario');
+    const boton = document.getElementById('boton');
+    const mensaje = document.getElementById('mensaje');
+
+    formulario.addEventListener('submit', function(event) {
+
+      event.preventDefault();
+
+      const dia = document.getElementById('dia').value;
+      const dolar = document.getElementById('dolar').value;
+
+      boton.disabled = true;
+      boton.textContent = 'Guardando...';
+      mensaje.textContent = '';
+
+      google.script.run
+        .withSuccessHandler(function(respuesta) {
+
+          mensaje.style.color = 'green';
+          mensaje.textContent = respuesta.mensaje;
+
+          formulario.reset();
+
+          boton.disabled = false;
+          boton.textContent = 'Guardar registro';
+
+        })
+
+        .withFailureHandler(function(error) {
+
+          mensaje.style.color = 'red';
+          mensaje.textContent = error.message;
+
+          boton.disabled = false;
+          boton.textContent = 'Guardar registro';
+
+        })
+
+        .guardarDatos(dia, dolar);
+
+    });
+
+  </script>
+
+</body>
+</html>
